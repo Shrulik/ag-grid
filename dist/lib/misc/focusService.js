@@ -19,6 +19,7 @@ var gridCore_1 = require("../gridCore");
 var columnController_1 = require("../columnController/columnController");
 var constants_1 = require("../constants");
 var gridCell_1 = require("../entities/gridCell");
+var fastdom_1 = require("fastdom");
 // tracks when focus goes into a cell. cells listen to this, so they know to stop editing
 // if focus goes into another cell.
 var FocusService = (function () {
@@ -34,16 +35,18 @@ var FocusService = (function () {
     };
     FocusService.prototype.init = function () {
         var _this = this;
-        var focusListener = function (focusEvent) {
-            var gridCell = _this.getCellForFocus(focusEvent);
-            if (gridCell) {
-                _this.informListeners({ gridCell: gridCell });
-            }
-        };
-        var eRootGui = this.gridCore.getRootGui();
-        eRootGui.addEventListener('focus', focusListener, true);
-        this.destroyMethods.push(function () {
-            eRootGui.removeEventListener('focus', focusListener);
+        fastdom_1.default.mutate(function () {
+            var focusListener = function (focusEvent) {
+                var gridCell = _this.getCellForFocus(focusEvent);
+                if (gridCell) {
+                    _this.informListeners({ gridCell: gridCell });
+                }
+            };
+            var eRootGui = _this.gridCore.getRootGui();
+            eRootGui.addEventListener('focus', focusListener, true);
+            _this.destroyMethods.push(function () {
+                eRootGui.removeEventListener('focus', focusListener);
+            });
         });
     };
     FocusService.prototype.getCellForFocus = function (focusEvent) {

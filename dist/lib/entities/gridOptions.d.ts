@@ -146,11 +146,11 @@ export interface GridOptions {
     getRowStyle?: Function;
     getRowClass?: Function;
     getRowHeight?: Function;
-    fullWidthRowRenderer?: {
+    nestedRowRenderer?: {
         new (): ICellRenderer;
     } | ICellRendererFunc | string;
-    fullWidthRowRendererParams?: any;
-    isFullWidthRow?(rowNode: RowNode): boolean;
+    nestedRowRendererParams?: any;
+    isNestedRow?(rowNode: RowNode): boolean;
     headerCellRenderer?: any;
     groupRowAggNodes?(nodes: RowNode[]): any;
     getBusinessKeyForNode?(node: RowNode): string;

@@ -23,6 +23,8 @@ import {IRangeController} from "../interfaces/iRangeController";
 import {CellNavigationService} from "../cellNavigationService";
 import {GridCell} from "../entities/gridCell";
 
+import fastdom from "fastdom";
+
 @Bean('rowRenderer')
 export class RowRenderer {
 
@@ -79,26 +81,29 @@ export class RowRenderer {
 
     @PostConstruct
     public init(): void {
-        this.getContainersFromGridPanel();
-        
-        var columnListener = this.onColumnEvent.bind(this);
-        var refreshViewListener = this.refreshView.bind(this);
 
-        this.eventService.addEventListener(Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
-        this.eventService.addEventListener(Events.EVENT_COLUMN_RESIZED, columnListener);
-        
-        this.eventService.addEventListener(Events.EVENT_MODEL_UPDATED, refreshViewListener);
-        this.eventService.addEventListener(Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
+        fastdom.mutate(()=>{
+            this.getContainersFromGridPanel();
 
-        this.destroyFunctions.push( () => {
-            this.eventService.removeEventListener(Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
-            this.eventService.removeEventListener(Events.EVENT_COLUMN_RESIZED, columnListener);
+            var columnListener = this.onColumnEvent.bind(this);
+            var refreshViewListener = this.refreshView.bind(this);
 
-            this.eventService.removeEventListener(Events.EVENT_MODEL_UPDATED, refreshViewListener);
-            this.eventService.removeEventListener(Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
-        });
+            this.eventService.addEventListener(Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
+            this.eventService.addEventListener(Events.EVENT_COLUMN_RESIZED, columnListener);
 
-        this.refreshView();
+            this.eventService.addEventListener(Events.EVENT_MODEL_UPDATED, refreshViewListener);
+            this.eventService.addEventListener(Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
+
+            this.destroyFunctions.push( () => {
+                this.eventService.removeEventListener(Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
+                this.eventService.removeEventListener(Events.EVENT_COLUMN_RESIZED, columnListener);
+
+                this.eventService.removeEventListener(Events.EVENT_MODEL_UPDATED, refreshViewListener);
+                this.eventService.removeEventListener(Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
+            });
+
+            this.refreshView();
+        })
     }
 
     public onColumnEvent(event: ColumnChangeEvent): void {
@@ -383,8 +388,10 @@ export class RowRenderer {
     }
 
     public drawVirtualRows() {
-        this.workOutFirstAndLastRowsToRender();
-        this.ensureRowsRendered();
+        fastdom.mutate(()=>{
+            this.workOutFirstAndLastRowsToRender();
+            this.ensureRowsRendered();
+        })
     }
 
     public workOutFirstAndLastRowsToRender(): void {

@@ -54,5 +54,8 @@
     "webpack": "1.12.12",
     "gulp-replace": "0.5.4",
     "gulp-if": "2.0.1"
+  },
+  "dependencies": {
+    "fastdom": "^1.0.4"
   }
 }

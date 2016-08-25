@@ -34,6 +34,7 @@ var logger_1 = require("../logger");
 var focusedCellController_1 = require("../focusedCellController");
 var cellNavigationService_1 = require("../cellNavigationService");
 var gridCell_1 = require("../entities/gridCell");
+var fastdom_1 = require("fastdom");
 var RowRenderer = (function () {
     function RowRenderer() {
         // map of row ids to row objects. keeps track of which elements
@@ -49,25 +50,28 @@ var RowRenderer = (function () {
     };
     RowRenderer.prototype.init = function () {
         var _this = this;
-        this.getContainersFromGridPanel();
-        var columnListener = this.onColumnEvent.bind(this);
-        var refreshViewListener = this.refreshView.bind(this);
-        this.eventService.addEventListener(events_1.Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
-        this.eventService.addEventListener(events_1.Events.EVENT_COLUMN_RESIZED, columnListener);
-        this.eventService.addEventListener(events_1.Events.EVENT_MODEL_UPDATED, refreshViewListener);
-        this.eventService.addEventListener(events_1.Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
-        this.destroyFunctions.push(function () {
-            _this.eventService.removeEventListener(events_1.Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
-            _this.eventService.removeEventListener(events_1.Events.EVENT_COLUMN_RESIZED, columnListener);
-            _this.eventService.removeEventListener(events_1.Events.EVENT_MODEL_UPDATED, refreshViewListener);
-            _this.eventService.removeEventListener(events_1.Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
+        fastdom_1.default.mutate(function () {
+            _this.getContainersFromGridPanel();
+            var columnListener = _this.onColumnEvent.bind(_this);
+            var refreshViewListener = _this.refreshView.bind(_this);
+            _this.eventService.addEventListener(events_1.Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
+            _this.eventService.addEventListener(events_1.Events.EVENT_COLUMN_RESIZED, columnListener);
+            _this.eventService.addEventListener(events_1.Events.EVENT_MODEL_UPDATED, refreshViewListener);
+            _this.eventService.addEventListener(events_1.Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
+            _this.destroyFunctions.push(function () {
+                _this.eventService.removeEventListener(events_1.Events.EVENT_DISPLAYED_COLUMNS_CHANGED, columnListener);
+                _this.eventService.removeEventListener(events_1.Events.EVENT_COLUMN_RESIZED, columnListener);
+                _this.eventService.removeEventListener(events_1.Events.EVENT_MODEL_UPDATED, refreshViewListener);
+                _this.eventService.removeEventListener(events_1.Events.EVENT_FLOATING_ROW_DATA_CHANGED, refreshViewListener);
+            });
+            _this.refreshView();
         });
-        this.refreshView();
     };
     RowRenderer.prototype.onColumnEvent = function (event) {
         this.setMainRowWidths();
     };
     RowRenderer.prototype.getContainersFromGridPanel = function () {
+        this.eNestedContainer = this.gridPanel.getNestedContainer();
         this.eBodyContainer = this.gridPanel.getBodyContainer();
         this.ePinnedLeftColsContainer = this.gridPanel.getPinnedLeftColsContainer();
         this.ePinnedRightColsContainer = this.gridPanel.getPinnedRightColsContainer();
@@ -115,10 +119,10 @@ var RowRenderer = (function () {
         });
     };
     RowRenderer.prototype.refreshAllFloatingRows = function () {
-        this.refreshFloatingRows(this.renderedTopFloatingRows, this.floatingRowModel.getFloatingTopRowData(), this.eFloatingTopPinnedLeftContainer, this.eFloatingTopPinnedRightContainer, this.eFloatingTopContainer);
-        this.refreshFloatingRows(this.renderedBottomFloatingRows, this.floatingRowModel.getFloatingBottomRowData(), this.eFloatingBottomPinnedLeftContainer, this.eFloatingBottomPinnedRightContainer, this.eFloatingBottomContainer);
+        this.refreshFloatingRows(this.renderedTopFloatingRows, this.floatingRowModel.getFloatingTopRowData(), this.eFloatingTopPinnedLeftContainer, this.eFloatingTopPinnedRightContainer, this.eFloatingTopContainer, null);
+        this.refreshFloatingRows(this.renderedBottomFloatingRows, this.floatingRowModel.getFloatingBottomRowData(), this.eFloatingBottomPinnedLeftContainer, this.eFloatingBottomPinnedRightContainer, this.eFloatingBottomContainer, null);
     };
-    RowRenderer.prototype.refreshFloatingRows = function (renderedRows, rowNodes, pinnedLeftContainer, pinnedRightContainer, bodyContainer) {
+    RowRenderer.prototype.refreshFloatingRows = function (renderedRows, rowNodes, ePinnedLeftContainer, ePinnedRightContainer, eBodyContainer, eNestedContainer) {
         var _this = this;
         renderedRows.forEach(function (row) {
             row.destroy();
@@ -131,7 +135,7 @@ var RowRenderer = (function () {
         }
         if (rowNodes) {
             rowNodes.forEach(function (node, rowIndex) {
-                var renderedRow = new renderedRow_1.RenderedRow(_this.$scope, _this, bodyContainer, pinnedLeftContainer, pinnedRightContainer, node, rowIndex);
+                var renderedRow = new renderedRow_1.RenderedRow(_this.$scope, _this, eBodyContainer, eNestedContainer, ePinnedLeftContainer, ePinnedRightContainer, node, rowIndex);
                 _this.context.wireBean(renderedRow);
                 renderedRows.push(renderedRow);
             });
@@ -287,8 +291,11 @@ var RowRenderer = (function () {
         delete this.renderedRows[indexToRemove];
     };
     RowRenderer.prototype.drawVirtualRows = function () {
-        this.workOutFirstAndLastRowsToRender();
-        this.ensureRowsRendered();
+        var _this = this;
+        fastdom_1.default.mutate(function () {
+            _this.workOutFirstAndLastRowsToRender();
+            _this.ensureRowsRendered();
+        });
     };
     RowRenderer.prototype.workOutFirstAndLastRowsToRender = function () {
         var newFirst;
@@ -389,7 +396,7 @@ var RowRenderer = (function () {
         if (utils_1.Utils.missingOrEmpty(columns)) {
             return;
         }
-        var renderedRow = new renderedRow_1.RenderedRow(this.$scope, this, this.eBodyContainer, this.ePinnedLeftColsContainer, this.ePinnedRightColsContainer, node, rowIndex);
+        var renderedRow = new renderedRow_1.RenderedRow(this.$scope, this, this.eBodyContainer, this.eNestedContainer, this.ePinnedLeftColsContainer, this.ePinnedRightColsContainer, node, rowIndex);
         this.context.wireBean(renderedRow);
         this.renderedRows[rowIndex] = renderedRow;
     };

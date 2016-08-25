@@ -48,6 +48,7 @@ import {ValueFormatterService} from "./rendering/valueFormatterService";
 import {AgCheckbox} from "./widgets/agCheckbox";
 import {LargeTextCellEditor} from "./rendering/cellEditors/largeTextCellEditor";
 
+import fastdom from "fastdom";
 export class Grid {
 
     private context: Context;
@@ -83,43 +84,48 @@ export class Grid {
 
         var enterprise = _.exists(Grid.enterpriseBeans);
 
-        this.context = new Context({
-            overrideBeans: Grid.enterpriseBeans,
-            seed: {
-                enterprise: enterprise,
-                gridOptions: gridOptions,
-                eGridDiv: eGridDiv,
-                $scope: $scope,
-                $compile: $compile,
-                quickFilterOnScope: quickFilterOnScope,
-                globalEventListener: globalEventListener
-            },
-            beans: [rowModelClass, CellRendererFactory, HorizontalDragService, HeaderTemplateLoader, FloatingRowModel, DragService,
-                DisplayedGroupCreator, EventService, GridOptionsWrapper, SelectionController,
-                FilterManager, ColumnController, RowRenderer,
-                HeaderRenderer, ExpressionService, BalancedColumnTreeBuilder, CsvCreator,
-                TemplateService, GridPanel, PopupService, ValueService, MasterSlaveService,
-                LoggerFactory, OldToolPanelDragAndDropService, ColumnUtils, AutoWidthCalculator, GridApi,
-                PaginationController, PopupService, GridCore, StandardMenuFactory,
-                DragAndDropService, SortController, ColumnApi, FocusedCellController, MouseEventService,
-                CellNavigationService, FilterStage, SortStage, FlattenStage, FocusService,
-                CellEditorFactory, CellRendererService, ValueFormatterService],
-            components: [{componentName: 'AgCheckbox', theClass: AgCheckbox}],
-            debug: !!gridOptions.debug
+        fastdom.mutate(()=>{
+            this.context = new Context({
+                overrideBeans: Grid.enterpriseBeans,
+                seed: {
+                    enterprise: enterprise,
+                    gridOptions: gridOptions,
+                    eGridDiv: eGridDiv,
+                    $scope: $scope,
+                    $compile: $compile,
+                    quickFilterOnScope: quickFilterOnScope,
+                    globalEventListener: globalEventListener
+                },
+                beans: [rowModelClass, CellRendererFactory, HorizontalDragService, HeaderTemplateLoader, FloatingRowModel, DragService,
+                    DisplayedGroupCreator, EventService, GridOptionsWrapper, SelectionController,
+                    FilterManager, ColumnController, RowRenderer,
+                    HeaderRenderer, ExpressionService, BalancedColumnTreeBuilder, CsvCreator,
+                    TemplateService, GridPanel, PopupService, ValueService, MasterSlaveService,
+                    LoggerFactory, OldToolPanelDragAndDropService, ColumnUtils, AutoWidthCalculator, GridApi,
+                    PaginationController, PopupService, GridCore, StandardMenuFactory,
+                    DragAndDropService, SortController, ColumnApi, FocusedCellController, MouseEventService,
+                    CellNavigationService, FilterStage, SortStage, FlattenStage, FocusService,
+                    CellEditorFactory, CellRendererService, ValueFormatterService],
+                components: [{componentName: 'AgCheckbox', theClass: AgCheckbox}],
+                debug: !!gridOptions.debug
+            })
+
+            this.context.getBean('cellEditorFactory').addCellEditor(Grid.LARGE_TEXT, LargeTextCellEditor);
+
+            var eventService = this.context.getBean('eventService');
+            var readyEvent = {
+                api: gridOptions.api,
+                columnApi: gridOptions.columnApi
+            };
+            
+            fastdom.measure(()=>{
+                eventService.dispatchEvent(Events.EVENT_GRID_READY, readyEvent);
+            });
+            
+            if (gridOptions.debug) {
+                console.log('ag-Grid -> initialised successfully, enterprise = ' + enterprise);
+            }
         });
-
-        this.context.getBean('cellEditorFactory').addCellEditor(Grid.LARGE_TEXT, LargeTextCellEditor);
-
-        var eventService = this.context.getBean('eventService');
-        var readyEvent = {
-            api: gridOptions.api,
-            columnApi: gridOptions.columnApi
-        };
-        eventService.dispatchEvent(Events.EVENT_GRID_READY, readyEvent);
-
-        if (gridOptions.debug) {
-            console.log('ag-Grid -> initialised successfully, enterprise = ' + enterprise);
-        }
     }
 
     private getRowModelClass(gridOptions: GridOptions): any {

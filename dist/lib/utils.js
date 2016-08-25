@@ -477,6 +477,9 @@ var Utils = (function () {
             eElement.style[key] = styles[key];
         });
     };
+    Utils.isScrollShowing = function (element) {
+        return element.clientHeight < element.scrollHeight;
+    };
     Utils.getScrollbarWidth = function () {
         var outer = document.createElement("div");
         outer.style.visibility = "hidden";

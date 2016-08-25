@@ -60,11 +60,11 @@ export declare class GridOptionsWrapper {
     getRowClass(): any;
     getRowStyleFunc(): Function;
     getRowClassFunc(): Function;
-    getIsFullWidthRowFunc(): (rowNode: RowNode) => boolean;
-    getFullWidthRowRenderer(): {
+    getIsNestedRowFunc(): (rowNode: RowNode) => boolean;
+    getNestedRowRenderer(): {
         new (): ICellRenderer;
     } | ICellRendererFunc | string;
-    getFullWidthRowRendererParams(): any;
+    getNestedRowRendererParams(): any;
     getBusinessKeyForNodeFunc(): (node: RowNode) => string;
     getHeaderCellRenderer(): any;
     getApi(): GridApi;

@@ -52,8 +52,10 @@ var cellRendererService_1 = require("./rendering/cellRendererService");
 var valueFormatterService_1 = require("./rendering/valueFormatterService");
 var agCheckbox_1 = require("./widgets/agCheckbox");
 var largeTextCellEditor_1 = require("./rendering/cellEditors/largeTextCellEditor");
+var fastdom_1 = require("fastdom");
 var Grid = (function () {
     function Grid(eGridDiv, gridOptions, globalEventListener, $scope, $compile, quickFilterOnScope) {
+        var _this = this;
         if (globalEventListener === void 0) { globalEventListener = null; }
         if ($scope === void 0) { $scope = null; }
         if ($compile === void 0) { $compile = null; }
@@ -66,40 +68,44 @@ var Grid = (function () {
         }
         var rowModelClass = this.getRowModelClass(gridOptions);
         var enterprise = utils_1.Utils.exists(Grid.enterpriseBeans);
-        this.context = new context_1.Context({
-            overrideBeans: Grid.enterpriseBeans,
-            seed: {
-                enterprise: enterprise,
-                gridOptions: gridOptions,
-                eGridDiv: eGridDiv,
-                $scope: $scope,
-                $compile: $compile,
-                quickFilterOnScope: quickFilterOnScope,
-                globalEventListener: globalEventListener
-            },
-            beans: [rowModelClass, cellRendererFactory_1.CellRendererFactory, horizontalDragService_1.HorizontalDragService, headerTemplateLoader_1.HeaderTemplateLoader, floatingRowModel_1.FloatingRowModel, dragService_1.DragService,
-                displayedGroupCreator_1.DisplayedGroupCreator, eventService_1.EventService, gridOptionsWrapper_1.GridOptionsWrapper, selectionController_1.SelectionController,
-                filterManager_1.FilterManager, columnController_1.ColumnController, rowRenderer_1.RowRenderer,
-                headerRenderer_1.HeaderRenderer, expressionService_1.ExpressionService, balancedColumnTreeBuilder_1.BalancedColumnTreeBuilder, csvCreator_1.CsvCreator,
-                templateService_1.TemplateService, gridPanel_1.GridPanel, popupService_1.PopupService, valueService_1.ValueService, masterSlaveService_1.MasterSlaveService,
-                logger_1.LoggerFactory, oldToolPanelDragAndDropService_1.OldToolPanelDragAndDropService, columnUtils_1.ColumnUtils, autoWidthCalculator_1.AutoWidthCalculator, gridApi_1.GridApi,
-                paginationController_1.PaginationController, popupService_1.PopupService, gridCore_1.GridCore, standardMenu_1.StandardMenuFactory,
-                dragAndDropService_1.DragAndDropService, sortController_1.SortController, columnController_1.ColumnApi, focusedCellController_1.FocusedCellController, mouseEventService_1.MouseEventService,
-                cellNavigationService_1.CellNavigationService, filterStage_1.FilterStage, sortStage_1.SortStage, flattenStage_1.FlattenStage, focusService_1.FocusService,
-                cellEditorFactory_1.CellEditorFactory, cellRendererService_1.CellRendererService, valueFormatterService_1.ValueFormatterService],
-            components: [{ componentName: 'AgCheckbox', theClass: agCheckbox_1.AgCheckbox }],
-            debug: !!gridOptions.debug
+        fastdom_1.default.mutate(function () {
+            _this.context = new context_1.Context({
+                overrideBeans: Grid.enterpriseBeans,
+                seed: {
+                    enterprise: enterprise,
+                    gridOptions: gridOptions,
+                    eGridDiv: eGridDiv,
+                    $scope: $scope,
+                    $compile: $compile,
+                    quickFilterOnScope: quickFilterOnScope,
+                    globalEventListener: globalEventListener
+                },
+                beans: [rowModelClass, cellRendererFactory_1.CellRendererFactory, horizontalDragService_1.HorizontalDragService, headerTemplateLoader_1.HeaderTemplateLoader, floatingRowModel_1.FloatingRowModel, dragService_1.DragService,
+                    displayedGroupCreator_1.DisplayedGroupCreator, eventService_1.EventService, gridOptionsWrapper_1.GridOptionsWrapper, selectionController_1.SelectionController,
+                    filterManager_1.FilterManager, columnController_1.ColumnController, rowRenderer_1.RowRenderer,
+                    headerRenderer_1.HeaderRenderer, expressionService_1.ExpressionService, balancedColumnTreeBuilder_1.BalancedColumnTreeBuilder, csvCreator_1.CsvCreator,
+                    templateService_1.TemplateService, gridPanel_1.GridPanel, popupService_1.PopupService, valueService_1.ValueService, masterSlaveService_1.MasterSlaveService,
+                    logger_1.LoggerFactory, oldToolPanelDragAndDropService_1.OldToolPanelDragAndDropService, columnUtils_1.ColumnUtils, autoWidthCalculator_1.AutoWidthCalculator, gridApi_1.GridApi,
+                    paginationController_1.PaginationController, popupService_1.PopupService, gridCore_1.GridCore, standardMenu_1.StandardMenuFactory,
+                    dragAndDropService_1.DragAndDropService, sortController_1.SortController, columnController_1.ColumnApi, focusedCellController_1.FocusedCellController, mouseEventService_1.MouseEventService,
+                    cellNavigationService_1.CellNavigationService, filterStage_1.FilterStage, sortStage_1.SortStage, flattenStage_1.FlattenStage, focusService_1.FocusService,
+                    cellEditorFactory_1.CellEditorFactory, cellRendererService_1.CellRendererService, valueFormatterService_1.ValueFormatterService],
+                components: [{ componentName: 'AgCheckbox', theClass: agCheckbox_1.AgCheckbox }],
+                debug: !!gridOptions.debug
+            });
+            _this.context.getBean('cellEditorFactory').addCellEditor(Grid.LARGE_TEXT, largeTextCellEditor_1.LargeTextCellEditor);
+            var eventService = _this.context.getBean('eventService');
+            var readyEvent = {
+                api: gridOptions.api,
+                columnApi: gridOptions.columnApi
+            };
+            fastdom_1.default.measure(function () {
+                eventService.dispatchEvent(events_1.Events.EVENT_GRID_READY, readyEvent);
+            });
+            if (gridOptions.debug) {
+                console.log('ag-Grid -> initialised successfully, enterprise = ' + enterprise);
+            }
         });
-        this.context.getBean('cellEditorFactory').addCellEditor(Grid.LARGE_TEXT, largeTextCellEditor_1.LargeTextCellEditor);
-        var eventService = this.context.getBean('eventService');
-        var readyEvent = {
-            api: gridOptions.api,
-            columnApi: gridOptions.columnApi
-        };
-        eventService.dispatchEvent(events_1.Events.EVENT_GRID_READY, readyEvent);
-        if (gridOptions.debug) {
-            console.log('ag-Grid -> initialised successfully, enterprise = ' + enterprise);
-        }
     }
     Grid.setEnterpriseBeans = function (enterpriseBeans, rowModelClasses) {
         this.enterpriseBeans = enterpriseBeans;
