@@ -6,9 +6,10 @@ import {ColumnController} from "../columnController/columnController";
 import {Constants} from "../constants";
 import {GridCell} from "../entities/gridCell";
 
-import fastdom from "fastdom"
 // tracks when focus goes into a cell. cells listen to this, so they know to stop editing
 // if focus goes into another cell.
+
+const fastdom = (<any>window).fastdom;
 
 @Bean('focusService')
 export class FocusService {

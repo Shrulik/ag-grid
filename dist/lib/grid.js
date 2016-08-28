@@ -1,5 +1,5 @@
 /**
- * ag-grid - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
+ * ag-grid-fastdom - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
  * @version v5.2.0
  * @link http://www.ag-grid.com/
  * @license MIT
@@ -52,7 +52,7 @@ var cellRendererService_1 = require("./rendering/cellRendererService");
 var valueFormatterService_1 = require("./rendering/valueFormatterService");
 var agCheckbox_1 = require("./widgets/agCheckbox");
 var largeTextCellEditor_1 = require("./rendering/cellEditors/largeTextCellEditor");
-var fastdom_1 = require("fastdom");
+var fastdom = window.fastdom;
 var Grid = (function () {
     function Grid(eGridDiv, gridOptions, globalEventListener, $scope, $compile, quickFilterOnScope) {
         var _this = this;
@@ -68,7 +68,7 @@ var Grid = (function () {
         }
         var rowModelClass = this.getRowModelClass(gridOptions);
         var enterprise = utils_1.Utils.exists(Grid.enterpriseBeans);
-        fastdom_1.default.mutate(function () {
+        fastdom.mutate(function () {
             _this.context = new context_1.Context({
                 overrideBeans: Grid.enterpriseBeans,
                 seed: {
@@ -99,7 +99,7 @@ var Grid = (function () {
                 api: gridOptions.api,
                 columnApi: gridOptions.columnApi
             };
-            fastdom_1.default.measure(function () {
+            fastdom.measure(function () {
                 eventService.dispatchEvent(events_1.Events.EVENT_GRID_READY, readyEvent);
             });
             if (gridOptions.debug) {

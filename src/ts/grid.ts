@@ -48,7 +48,9 @@ import {ValueFormatterService} from "./rendering/valueFormatterService";
 import {AgCheckbox} from "./widgets/agCheckbox";
 import {LargeTextCellEditor} from "./rendering/cellEditors/largeTextCellEditor";
 
-import fastdom from "fastdom";
+const fastdom = (<any>window).fastdom;
+
+
 export class Grid {
 
     private context: Context;

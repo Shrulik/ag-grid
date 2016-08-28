@@ -1,5 +1,5 @@
 /**
- * ag-grid - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
+ * ag-grid-fastdom - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
  * @version v5.2.0
  * @link http://www.ag-grid.com/
  * @license MIT
@@ -73,9 +73,6 @@ var gridHtml = '<div>' +
     '<div class="ag-body-viewport">' +
     '<div class="ag-body-container"></div>' +
     '</div>' +
-    '</div>' +
-    '<div class="ag-nested-viewport">' +
-    '<div class="ag-nested-container"></div>' +
     '</div>' +
     '</div>' +
     '</div>';
@@ -438,29 +435,16 @@ var GridPanel = (function () {
     };
     GridPanel.prototype.isVerticalScrollShowing = function () {
         if (this.columnController.isPinningRight()) {
-            return utils_1.Utils.isScrollShowing(this.ePinnedRightColsViewport);
-        }
-        else {
-            return utils_1.Utils.isScrollShowing(this.eBodyViewport);
-        }
-    };
-    GridPanel.prototype.isBodyVerticalScrollShowing = function () {
-        if (this.columnController.isPinningRight()) {
+            // if pinning right, then the scroll bar can show, however for some reason
+            // it overlays the grid and doesn't take space.
             return false;
         }
         else {
-            return utils_1.Utils.isScrollShowing(this.eBodyViewport);
+            return this.eBodyViewport.clientHeight < this.eBodyViewport.scrollHeight;
         }
     };
     // gets called every 500 ms. we use this to set padding on right pinned column
     GridPanel.prototype.periodicallyCheck = function () {
-        this.setBottomPaddingOnPinnedRight();
-        this.setMarginOnNestedPanel();
-    };
-    // the pinned container needs extra space at the bottom, some blank space, otherwise when
-    // vertically scrolled all the way down, the last row will be hidden behind the scrolls.
-    // this extra padding allows the last row to be lifted above the bottom scrollbar.
-    GridPanel.prototype.setBottomPaddingOnPinnedRight = function () {
         if (this.columnController.isPinningRight()) {
             var bodyHorizontalScrollShowing = this.eBodyViewport.clientWidth < this.eBodyViewport.scrollWidth;
             if (bodyHorizontalScrollShowing) {
@@ -469,14 +453,6 @@ var GridPanel = (function () {
             else {
                 this.ePinnedRightColsContainer.style.marginBottom = '';
             }
-        }
-    };
-    GridPanel.prototype.setMarginOnNestedPanel = function () {
-        if (this.isVerticalScrollShowing()) {
-            this.eNestedContainer.style.marginRight = this.scrollWidth + 'px';
-        }
-        else {
-            this.eNestedContainer.style.marginRight = '';
         }
     };
     GridPanel.prototype.ensureColumnVisible = function (key) {
@@ -535,11 +511,8 @@ var GridPanel = (function () {
     };
     GridPanel.prototype.getWidthForSizeColsToFit = function () {
         var availableWidth = this.eBody.clientWidth;
-        // if pinning right, then the scroll bar can show, however for some reason
-        // it overlays the grid and doesn't take space. so we are only interested
-        // in the body scroll showing.
-        var removeScrollWidth = this.isBodyVerticalScrollShowing();
-        if (removeScrollWidth) {
+        var scrollShowing = this.isVerticalScrollShowing();
+        if (scrollShowing) {
             availableWidth -= this.scrollWidth;
         }
         return availableWidth;
@@ -571,9 +544,6 @@ var GridPanel = (function () {
     };
     GridPanel.prototype.getBodyContainer = function () {
         return this.eBodyContainer;
-    };
-    GridPanel.prototype.getNestedContainer = function () {
-        return this.eNestedContainer;
     };
     GridPanel.prototype.getDropTargetBodyContainers = function () {
         if (this.forPrint) {
@@ -651,8 +621,6 @@ var GridPanel = (function () {
             this.eBodyContainer = this.queryHtmlElement('.ag-body-container');
             this.eBodyViewport = this.queryHtmlElement('.ag-body-viewport');
             this.eBodyViewportWrapper = this.queryHtmlElement('.ag-body-viewport-wrapper');
-            this.eNestedContainer = this.queryHtmlElement('.ag-nested-container');
-            this.eNestedViewport = this.queryHtmlElement('.ag-nested-viewport');
             this.ePinnedLeftColsContainer = this.queryHtmlElement('.ag-pinned-left-cols-container');
             this.ePinnedRightColsContainer = this.queryHtmlElement('.ag-pinned-right-cols-container');
             this.ePinnedLeftColsViewport = this.queryHtmlElement('.ag-pinned-left-cols-viewport');
@@ -675,25 +643,13 @@ var GridPanel = (function () {
             this.eFloatingBottomViewport = this.queryHtmlElement('.ag-floating-bottom-viewport');
             this.eAllCellContainers = [this.ePinnedLeftColsContainer, this.ePinnedRightColsContainer, this.eBodyContainer,
                 this.eFloatingTop, this.eFloatingBottom];
-            this.addMouseWheelEventListeners();
+            // IE9, Chrome, Safari, Opera
+            this.ePinnedLeftColsViewport.addEventListener('mousewheel', this.pinnedLeftMouseWheelListener.bind(this));
+            this.eBodyViewport.addEventListener('mousewheel', this.centerMouseWheelListener.bind(this));
+            // Firefox
+            this.ePinnedLeftColsViewport.addEventListener('DOMMouseScroll', this.pinnedLeftMouseWheelListener.bind(this));
+            this.eBodyViewport.addEventListener('DOMMouseScroll', this.centerMouseWheelListener.bind(this));
         }
-    };
-    GridPanel.prototype.addMouseWheelEventListeners = function () {
-        var _this = this;
-        var genericListener = this.genericMouseWheelListener.bind(this);
-        var centerListener = this.centerMouseWheelListener.bind(this);
-        // IE9, Chrome, Safari, Opera
-        this.ePinnedLeftColsViewport.addEventListener('mousewheel', genericListener);
-        this.eBodyViewport.addEventListener('mousewheel', centerListener);
-        // Firefox
-        this.ePinnedLeftColsViewport.addEventListener('DOMMouseScroll', genericListener);
-        this.eBodyViewport.addEventListener('DOMMouseScroll', centerListener);
-        this.destroyFunctions.push(function () {
-            _this.ePinnedLeftColsViewport.removeEventListener('mousewheel', genericListener);
-            _this.eBodyViewport.removeEventListener('mousewheel', centerListener);
-            _this.ePinnedLeftColsViewport.removeEventListener('DOMMouseScroll', genericListener);
-            _this.eBodyViewport.removeEventListener('DOMMouseScroll', centerListener);
-        });
     };
     GridPanel.prototype.getHeaderViewport = function () {
         return this.eHeaderViewport;
@@ -706,8 +662,7 @@ var GridPanel = (function () {
             return this.generalMouseWheelListener(event, this.ePinnedRightColsViewport);
         }
     };
-    // used for listening to mouse wheel events on left pinned and also the nested components
-    GridPanel.prototype.genericMouseWheelListener = function (event) {
+    GridPanel.prototype.pinnedLeftMouseWheelListener = function (event) {
         var targetPanel;
         if (this.columnController.isPinningRight()) {
             targetPanel = this.ePinnedRightColsViewport;
@@ -729,7 +684,7 @@ var GridPanel = (function () {
             var newTopPosition = this.eBodyViewport.scrollTop + wheelEvent.pixelY;
             targetPanel.scrollTop = newTopPosition;
         }
-        // allow the option to pass mouse wheel events to the browser
+        // allow the option to pass mouse wheel events ot the browser
         // https://github.com/ceolter/ag-grid/issues/800
         // in the future, this should be tied in with 'forPrint' option, or have an option 'no vertical scrolls'
         if (!this.gridOptionsWrapper.isSuppressPreventDefaultOnMouseWheel()) {
@@ -816,10 +771,8 @@ var GridPanel = (function () {
         var floatingBottomHeight = this.floatingRowModel.getFloatingBottomTotalHeight();
         var floatingBottomTop = heightOfContainer - floatingBottomHeight;
         var heightOfCentreRows = heightOfContainer - totalHeaderHeight - floatingBottomHeight - floatingTopHeight;
-        // this.eBody.style.paddingTop = paddingTop + 'px';
-        // this.eBody.style.paddingBottom = floatingBottomHeight + 'px';
-        this.eBody.style.top = paddingTop + 'px';
-        this.eBody.style.height = heightOfCentreRows + 'px';
+        this.eBody.style.paddingTop = paddingTop + 'px';
+        this.eBody.style.paddingBottom = floatingBottomHeight + 'px';
         this.eFloatingTop.style.top = totalHeaderHeight + 'px';
         this.eFloatingTop.style.height = floatingTopHeight + 'px';
         this.eFloatingBottom.style.height = floatingBottomHeight + 'px';
@@ -882,7 +835,6 @@ var GridPanel = (function () {
                 if (newTopPosition !== that.lastTopPosition) {
                     that.lastTopPosition = newTopPosition;
                     that.verticallyScrollLeftPinned(newTopPosition);
-                    that.verticallyScrollNested(newTopPosition);
                     that.rowRenderer.drawVirtualRows();
                 }
             }
@@ -892,7 +844,6 @@ var GridPanel = (function () {
             if (newTopPosition !== that.lastTopPosition) {
                 that.lastTopPosition = newTopPosition;
                 that.verticallyScrollLeftPinned(newTopPosition);
-                that.verticallyScrollNested(newTopPosition);
                 that.verticallyScrollBody(newTopPosition);
                 that.rowRenderer.drawVirtualRows();
             }
@@ -967,9 +918,6 @@ var GridPanel = (function () {
     };
     GridPanel.prototype.verticallyScrollLeftPinned = function (bodyTopPosition) {
         this.ePinnedLeftColsContainer.style.top = -bodyTopPosition + 'px';
-    };
-    GridPanel.prototype.verticallyScrollNested = function (bodyTopPosition) {
-        this.eNestedContainer.style.top = -bodyTopPosition + 'px';
     };
     GridPanel.prototype.verticallyScrollBody = function (position) {
         this.eBodyViewport.scrollTop = position;

@@ -23,7 +23,7 @@ import {IRangeController} from "../interfaces/iRangeController";
 import {CellNavigationService} from "../cellNavigationService";
 import {GridCell} from "../entities/gridCell";
 
-import fastdom from "fastdom";
+const fastdom = (<any>window).fastdom;
 
 @Bean('rowRenderer')
 export class RowRenderer {

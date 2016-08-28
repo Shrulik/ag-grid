@@ -1,4 +1,4 @@
-// Type definitions for ag-grid v5.2.0
+// Type definitions for ag-grid-fastdom v5.2.0
 // Project: http://www.ag-grid.com/
 // Definitions by: Niall Crosby <https://github.com/ceolter/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -34,8 +34,6 @@ export declare class GridPanel {
     private eBodyContainer;
     private ePinnedLeftColsContainer;
     private ePinnedRightColsContainer;
-    private eNestedViewport;
-    private eNestedContainer;
     private eHeaderContainer;
     private eHeaderOverlay;
     private ePinnedLeftHeader;
@@ -93,10 +91,7 @@ export declare class GridPanel {
     getCenterWidth(): number;
     isHorizontalScrollShowing(): boolean;
     isVerticalScrollShowing(): boolean;
-    private isBodyVerticalScrollShowing();
     periodicallyCheck(): void;
-    private setBottomPaddingOnPinnedRight();
-    private setMarginOnNestedPanel();
     ensureColumnVisible(key: any): void;
     showLoadingOverlay(): void;
     showNoRowsOverlay(): void;
@@ -104,7 +99,6 @@ export declare class GridPanel {
     private getWidthForSizeColsToFit();
     sizeColumnsToFit(nextTimeout?: number): void;
     getBodyContainer(): HTMLElement;
-    getNestedContainer(): HTMLElement;
     getDropTargetBodyContainers(): HTMLElement[];
     getBodyViewport(): HTMLElement;
     getPinnedLeftColsContainer(): HTMLElement;
@@ -118,10 +112,9 @@ export declare class GridPanel {
     getPinnedRightHeader(): HTMLElement;
     private queryHtmlElement(selector);
     private findElements();
-    private addMouseWheelEventListeners();
     getHeaderViewport(): HTMLElement;
     private centerMouseWheelListener(event);
-    genericMouseWheelListener(event: any): boolean;
+    private pinnedLeftMouseWheelListener(event);
     private generalMouseWheelListener(event, targetPanel);
     onColumnResized(): void;
     onDisplayedColumnsChanged(): void;
@@ -138,7 +131,6 @@ export declare class GridPanel {
     private debounce(callback);
     horizontallyScrollHeaderCenterAndFloatingCenter(): void;
     private verticallyScrollLeftPinned(bodyTopPosition);
-    private verticallyScrollNested(bodyTopPosition);
     private verticallyScrollBody(position);
     getVerticalScrollPosition(): number;
     getBodyViewportClientRect(): ClientRect;

@@ -1,5 +1,5 @@
 /**
- * ag-grid - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
+ * ag-grid-fastdom - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
  * @version v5.2.0
  * @link http://www.ag-grid.com/
  * @license MIT
@@ -19,9 +19,9 @@ var gridCore_1 = require("../gridCore");
 var columnController_1 = require("../columnController/columnController");
 var constants_1 = require("../constants");
 var gridCell_1 = require("../entities/gridCell");
-var fastdom_1 = require("fastdom");
 // tracks when focus goes into a cell. cells listen to this, so they know to stop editing
 // if focus goes into another cell.
+var fastdom = window.fastdom;
 var FocusService = (function () {
     function FocusService() {
         this.destroyMethods = [];
@@ -35,7 +35,7 @@ var FocusService = (function () {
     };
     FocusService.prototype.init = function () {
         var _this = this;
-        fastdom_1.default.mutate(function () {
+        fastdom.mutate(function () {
             var focusListener = function (focusEvent) {
                 var gridCell = _this.getCellForFocus(focusEvent);
                 if (gridCell) {

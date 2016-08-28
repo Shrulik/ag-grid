@@ -137,13 +137,3 @@ export * from './dist/lib/templateService';
 export * from './dist/lib/utils';
 export * from './dist/lib/valueService';
 
-declare module "fastdom" {
-
-}
-
-declare module "fastdom" {
-    export = {
-        mutate: (callback:Function)=> {},
-        measure: (callback:Function)=> {}
-    };
-}

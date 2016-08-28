@@ -1,4 +1,4 @@
-// Type definitions for ag-grid v5.2.0
+// Type definitions for ag-grid-fastdom v5.2.0
 // Project: http://www.ag-grid.com/
 // Definitions by: Niall Crosby <https://github.com/ceolter/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -60,11 +60,11 @@ export declare class GridOptionsWrapper {
     getRowClass(): any;
     getRowStyleFunc(): Function;
     getRowClassFunc(): Function;
-    getIsNestedRowFunc(): (rowNode: RowNode) => boolean;
-    getNestedRowRenderer(): {
+    getIsFullWidthRowFunc(): (rowNode: RowNode) => boolean;
+    getFullWidthRowRenderer(): {
         new (): ICellRenderer;
     } | ICellRendererFunc | string;
-    getNestedRowRendererParams(): any;
+    getFullWidthRowRendererParams(): any;
     getBusinessKeyForNodeFunc(): (node: RowNode) => string;
     getHeaderCellRenderer(): any;
     getApi(): GridApi;

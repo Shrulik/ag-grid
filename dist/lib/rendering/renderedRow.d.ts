@@ -1,4 +1,4 @@
-// Type definitions for ag-grid v5.2.0
+// Type definitions for ag-grid-fastdom v5.2.0
 // Project: http://www.ag-grid.com/
 // Definitions by: Niall Crosby <https://github.com/ceolter/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -16,24 +16,20 @@ export declare class RenderedRow {
     private context;
     private focusedCellController;
     private cellRendererService;
-    private gridPanel;
-    private ePinnedLeftRow;
-    private ePinnedRightRow;
-    private eBodyRow;
-    private eNestedRow;
-    private eAllRowContainers;
-    private nestedRowComponent;
+    ePinnedLeftRow: HTMLElement;
+    ePinnedRightRow: HTMLElement;
+    eBodyRow: HTMLElement;
+    private eLeftCenterAndRightRows;
     private renderedCells;
     private scope;
     private rowNode;
     private rowIndex;
-    private nestedRow;
-    private nestedRowRenderer;
-    private nestedRowRendererParams;
+    private fullWidthRow;
+    private fullWidthRowRenderer;
+    private fullWidthRowRendererParams;
     private parentScope;
     private rowRenderer;
     private eBodyContainer;
-    private eNestedContainer;
     private ePinnedLeftContainer;
     private ePinnedRightContainer;
     private eGroupRow;
@@ -42,11 +38,8 @@ export declare class RenderedRow {
     private destroyFunctions;
     private renderedRowEventService;
     private initialised;
-    constructor(parentScope: any, rowRenderer: RowRenderer, eBodyContainer: HTMLElement, eNestedContainer: HTMLElement, ePinnedLeftContainer: HTMLElement, ePinnedRightContainer: HTMLElement, node: RowNode, rowIndex: number);
-    private setupRowContainers();
-    private setupNestedContainers();
-    private setupNestedGroupContainers();
-    private setupNormalContainers();
+    constructor(parentScope: any, rowRenderer: RowRenderer, eBodyContainer: HTMLElement, ePinnedLeftContainer: HTMLElement, ePinnedRightContainer: HTMLElement, node: RowNode, rowIndex: number);
+    private checkForFullWidthRow();
     init(): void;
     private addDataChangedListener();
     private angular1Compile(element);
@@ -65,6 +58,8 @@ export declare class RenderedRow {
     private addCellFocusedListener();
     forEachRenderedCell(callback: (renderedCell: RenderedCell) => void): void;
     private addNodeDataChangedListener();
+    private createContainers();
+    private attachContainers();
     onMouseEvent(eventName: string, mouseEvent: MouseEvent, cell: GridCell): void;
     private setTopAndHeightCss();
     private addRowIds();
@@ -76,20 +71,16 @@ export declare class RenderedRow {
     private destroyScope();
     isDataInList(rows: any[]): boolean;
     isGroup(): boolean;
-    private refreshNestedComponent();
-    private createNestedComponent();
-    private destroyNestedComponent();
-    private refreshNestedComponent_old();
-    private createNestedParams(eRow);
+    private refreshSingleComponent();
+    private createSingleComponentParams();
     private createGroupSpanningEntireRowCell(padding);
     private createChildScopeOrNull(data);
     private addStyleFromRowStyle();
     private addStyleFromRowStyleFunc();
     private createParams();
     private createEvent(event, eventSource);
-    private createRowContainer(eParent);
-    private onRowDblClick(event);
-    onRowClick(event: MouseEvent): void;
+    private createRowContainer();
+    onRowClicked(event: MouseEvent): void;
     getRowNode(): any;
     refreshCells(colIds: string[], animate: boolean): void;
     private addClassesFromRowClassFunc();

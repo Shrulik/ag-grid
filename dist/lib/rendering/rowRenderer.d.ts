@@ -1,4 +1,4 @@
-// Type definitions for ag-grid v5.2.0
+// Type definitions for ag-grid-fastdom v5.2.0
 // Project: http://www.ag-grid.com/
 // Definitions by: Niall Crosby <https://github.com/ceolter/>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -34,7 +34,6 @@ export declare class RowRenderer {
     private eAllBodyContainers;
     private eAllPinnedLeftContainers;
     private eAllPinnedRightContainers;
-    private eNestedContainer;
     private eBodyContainer;
     private eBodyViewport;
     private ePinnedLeftColsContainer;
@@ -55,7 +54,7 @@ export declare class RowRenderer {
     getAllCellsForColumn(column: Column): HTMLElement[];
     setMainRowWidths(): void;
     refreshAllFloatingRows(): void;
-    private refreshFloatingRows(renderedRows, rowNodes, ePinnedLeftContainer, ePinnedRightContainer, eBodyContainer, eNestedContainer);
+    private refreshFloatingRows(renderedRows, rowNodes, pinnedLeftContainer, pinnedRightContainer, bodyContainer);
     refreshView(refreshEvent?: any): void;
     private restoreFocusedCell(gridCell);
     softRefreshView(): void;

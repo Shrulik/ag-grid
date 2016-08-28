@@ -180,11 +180,9 @@ ag-grid-ng2 {
 }
 .ag-body {
   height: 100%;
-  width: 100%;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  position: absolute;
 }
 .ag-floating-top {
   position: absolute;
@@ -295,22 +293,6 @@ ag-grid-ng2 {
   overflow-y: auto;
   height: 100%;
 }
-.ag-nested-viewport {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: inline;
-  pointer-events: none;
-  overflow: hidden;
-}
-.ag-nested-container {
-  position: relative;
-}
-.ag-nested-row {
-  pointer-events: all;
-}
 .ag-scrolls .ag-body-container {
   position: relative;
   display: inline-block;
@@ -322,6 +304,9 @@ ag-grid-ng2 {
 }
 .ag-no-scrolls .ag-row {
   position: relative;
+}
+.agile-gird-row:hover {
+  background-color: #f0f8ff;
 }
 .ag-column-drop {
   width: 100%;

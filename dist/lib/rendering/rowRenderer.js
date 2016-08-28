@@ -1,5 +1,5 @@
 /**
- * ag-grid - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
+ * ag-grid-fastdom - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
  * @version v5.2.0
  * @link http://www.ag-grid.com/
  * @license MIT
@@ -34,7 +34,7 @@ var logger_1 = require("../logger");
 var focusedCellController_1 = require("../focusedCellController");
 var cellNavigationService_1 = require("../cellNavigationService");
 var gridCell_1 = require("../entities/gridCell");
-var fastdom_1 = require("fastdom");
+var fastdom = window.fastdom;
 var RowRenderer = (function () {
     function RowRenderer() {
         // map of row ids to row objects. keeps track of which elements
@@ -50,7 +50,7 @@ var RowRenderer = (function () {
     };
     RowRenderer.prototype.init = function () {
         var _this = this;
-        fastdom_1.default.mutate(function () {
+        fastdom.mutate(function () {
             _this.getContainersFromGridPanel();
             var columnListener = _this.onColumnEvent.bind(_this);
             var refreshViewListener = _this.refreshView.bind(_this);
@@ -71,7 +71,6 @@ var RowRenderer = (function () {
         this.setMainRowWidths();
     };
     RowRenderer.prototype.getContainersFromGridPanel = function () {
-        this.eNestedContainer = this.gridPanel.getNestedContainer();
         this.eBodyContainer = this.gridPanel.getBodyContainer();
         this.ePinnedLeftColsContainer = this.gridPanel.getPinnedLeftColsContainer();
         this.ePinnedRightColsContainer = this.gridPanel.getPinnedRightColsContainer();
@@ -119,10 +118,10 @@ var RowRenderer = (function () {
         });
     };
     RowRenderer.prototype.refreshAllFloatingRows = function () {
-        this.refreshFloatingRows(this.renderedTopFloatingRows, this.floatingRowModel.getFloatingTopRowData(), this.eFloatingTopPinnedLeftContainer, this.eFloatingTopPinnedRightContainer, this.eFloatingTopContainer, null);
-        this.refreshFloatingRows(this.renderedBottomFloatingRows, this.floatingRowModel.getFloatingBottomRowData(), this.eFloatingBottomPinnedLeftContainer, this.eFloatingBottomPinnedRightContainer, this.eFloatingBottomContainer, null);
+        this.refreshFloatingRows(this.renderedTopFloatingRows, this.floatingRowModel.getFloatingTopRowData(), this.eFloatingTopPinnedLeftContainer, this.eFloatingTopPinnedRightContainer, this.eFloatingTopContainer);
+        this.refreshFloatingRows(this.renderedBottomFloatingRows, this.floatingRowModel.getFloatingBottomRowData(), this.eFloatingBottomPinnedLeftContainer, this.eFloatingBottomPinnedRightContainer, this.eFloatingBottomContainer);
     };
-    RowRenderer.prototype.refreshFloatingRows = function (renderedRows, rowNodes, ePinnedLeftContainer, ePinnedRightContainer, eBodyContainer, eNestedContainer) {
+    RowRenderer.prototype.refreshFloatingRows = function (renderedRows, rowNodes, pinnedLeftContainer, pinnedRightContainer, bodyContainer) {
         var _this = this;
         renderedRows.forEach(function (row) {
             row.destroy();
@@ -135,7 +134,7 @@ var RowRenderer = (function () {
         }
         if (rowNodes) {
             rowNodes.forEach(function (node, rowIndex) {
-                var renderedRow = new renderedRow_1.RenderedRow(_this.$scope, _this, eBodyContainer, eNestedContainer, ePinnedLeftContainer, ePinnedRightContainer, node, rowIndex);
+                var renderedRow = new renderedRow_1.RenderedRow(_this.$scope, _this, bodyContainer, pinnedLeftContainer, pinnedRightContainer, node, rowIndex);
                 _this.context.wireBean(renderedRow);
                 renderedRows.push(renderedRow);
             });
@@ -292,7 +291,7 @@ var RowRenderer = (function () {
     };
     RowRenderer.prototype.drawVirtualRows = function () {
         var _this = this;
-        fastdom_1.default.mutate(function () {
+        fastdom.mutate(function () {
             _this.workOutFirstAndLastRowsToRender();
             _this.ensureRowsRendered();
         });
@@ -396,7 +395,7 @@ var RowRenderer = (function () {
         if (utils_1.Utils.missingOrEmpty(columns)) {
             return;
         }
-        var renderedRow = new renderedRow_1.RenderedRow(this.$scope, this, this.eBodyContainer, this.eNestedContainer, this.ePinnedLeftColsContainer, this.ePinnedRightColsContainer, node, rowIndex);
+        var renderedRow = new renderedRow_1.RenderedRow(this.$scope, this, this.eBodyContainer, this.ePinnedLeftColsContainer, this.ePinnedRightColsContainer, node, rowIndex);
         this.context.wireBean(renderedRow);
         this.renderedRows[rowIndex] = renderedRow;
     };

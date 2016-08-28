@@ -1,5 +1,5 @@
 /**
- * ag-grid - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
+ * ag-grid-fastdom - Advanced Data Grid / Data Table supporting Javascript / React / AngularJS / Web Components
  * @version v5.2.0
  * @link http://www.ag-grid.com/
  * @license MIT
@@ -103,9 +103,9 @@ var GridOptionsWrapper = (function () {
     GridOptionsWrapper.prototype.getRowClass = function () { return this.gridOptions.rowClass; };
     GridOptionsWrapper.prototype.getRowStyleFunc = function () { return this.gridOptions.getRowStyle; };
     GridOptionsWrapper.prototype.getRowClassFunc = function () { return this.gridOptions.getRowClass; };
-    GridOptionsWrapper.prototype.getIsNestedRowFunc = function () { return this.gridOptions.isNestedRow; };
-    GridOptionsWrapper.prototype.getNestedRowRenderer = function () { return this.gridOptions.nestedRowRenderer; };
-    GridOptionsWrapper.prototype.getNestedRowRendererParams = function () { return this.gridOptions.nestedRowRendererParams; };
+    GridOptionsWrapper.prototype.getIsFullWidthRowFunc = function () { return this.gridOptions.isFullWidthRow; };
+    GridOptionsWrapper.prototype.getFullWidthRowRenderer = function () { return this.gridOptions.fullWidthRowRenderer; };
+    GridOptionsWrapper.prototype.getFullWidthRowRendererParams = function () { return this.gridOptions.fullWidthRowRendererParams; };
     GridOptionsWrapper.prototype.getBusinessKeyForNodeFunc = function () { return this.gridOptions.getBusinessKeyForNode; };
     GridOptionsWrapper.prototype.getHeaderCellRenderer = function () { return this.gridOptions.headerCellRenderer; };
     GridOptionsWrapper.prototype.getApi = function () { return this.gridOptions.api; };
